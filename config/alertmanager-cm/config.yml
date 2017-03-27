@@ -1,0 +1,39 @@
+# This is a example of configuration file of alert manager, The complete Docs
+# can be found here: https://prometheus.io/docs/alerting/configuration/
+
+global:
+  slack_api_url: 'https://hooks.slack.com/services/<YOUR HOOKS URL>'
+
+route:
+   # A default receiver (In the case of more receivers)
+  receiver: slack-notifications
+
+  # The child route trees
+  routes:
+  # Send severity=slack alerts to slack.
+  - match:
+      severity: slack
+    receiver: slack-notifications
+#   We have only one receiver, but we can add new receivers e.g.
+#  - match:
+#      severity: email
+#    receiver: email-notifications
+
+
+receivers:
+- name: 'slack-notifications'
+  slack_configs:
+  - channel: '#alerts'
+    text: '<!channel>{{ template "slack.devops.text" . }}'
+    send_resolved: true
+
+#- name: ' email-notifications'
+#  email_con:
+#  - to: 'foo@bar.com'
+# [...]
+
+
+# We can add new templates in the folder config/alertmanager-templates-cm and
+# the run script scripts/update_alertmanager_templates.sh
+templates:
+- '/etc/alertmanager-templates/*.tmpl'
